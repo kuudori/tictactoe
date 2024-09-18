@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package game;
+
+option go_package = "server/pkg/tictactoev1;tictactoev1";
+
+
+enum GameStatus {
+  WAITING_FOR_PLAYER = 0;
+  IN_PROGRESS = 1;
+  FINISHED = 2;
+}
+
+enum GameEvent {
+  GAME_CREATED = 0;
+  PLAYER_JOINED = 1;
+  PLAYER_LEAVED = 2;
+  MOVE_MADE = 3;
+  GAME_OVER = 4;
+}
+
+
+service GameService {
+  rpc Login (LoginRequest) returns (PlayerData) {}
+  rpc CreateGame (CreateGameRequest) returns (GameData) {}
+  rpc JoinGame (JoinGameRequest) returns (GameData) {}
+  rpc LeaveGame (LeaveGameRequest) returns (GameData) {}
+  rpc MakeMove (MoveRequest) returns (GameData) {}
+  rpc GetGameState (GameRequest) returns (stream GameData) {}
+}
+
+message PlayerData {
+  string player_id = 1; // Player Id
+  string player_name = 2; // Name of player
+}
+
+message LoginRequest {
+  string player_name = 1; // Name of player
+}
+
+message CreateGameRequest {
+  string password = 1; // Game password
+}
+
+message JoinGameRequest {
+  string game_id = 1; // Id of created game
+  string password = 2; // Game password
+
+}
+
+message LeaveGameRequest {
+  string game_id = 1; // Id of created game
+}
+
+message MoveRequest {
+  string game_id = 1;  // Id of created game
+  int32 position = 2; // Position to draw
+}
+
+
+message GameRequest {
+  string game_id = 1; // Id of created game
+}
+
+
+message GameData {
+  string id = 1; // Game id
+  string password = 2; // Game password
+  repeated string board = 3; // Board
+  PlayerData current_player = 4; // Player who move
+  string winner = 5; // Winner
+  PlayerData player_x = 6; // Player 1
+  PlayerData player_o = 7; // Player 2
+  GameStatus status = 8; // Status
+  GameEvent event = 9; // Event
+}
+
